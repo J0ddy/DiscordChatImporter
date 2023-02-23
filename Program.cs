@@ -19,6 +19,9 @@ namespace DiscordChatImporter
             Console.WriteLine(" All Messages sent.");
         }
 
+        /// <summary>
+        /// Loads the settings from the console.
+        /// </summary>
         private static void LoadSettings() {
             Console.Write("Enter your Discord webhook URL: ");
             string whurl = Console.ReadLine();
@@ -27,6 +30,9 @@ namespace DiscordChatImporter
             settings = new Settings(whurl, filter);
         }
 
+        /// <summary>
+        /// Gets all files from the directory.
+        /// </summary>
         private static List<string> GetFiles() {
             List<string> files = new List<string>();
             Console.WriteLine("Please enter the to the directory to import all files from: ");
@@ -37,6 +43,10 @@ namespace DiscordChatImporter
         }
 
 
+        /// <summary>
+        /// Reads all files and splits them into messages.
+        /// This is to prevent Discord from rejecting messages that are too long.
+        /// </summary>
         private static List<string> GetMessages(List<string> files)
         {
             List<string> messages = new List<string>();
@@ -52,6 +62,9 @@ namespace DiscordChatImporter
             return messages;
         }
 
+        /// <summary>
+        /// Sends all messages to Discord using the webhook.
+        /// </summary>
         private static void SendMessages(List<string> messages)
         {
             int counter = 0;
@@ -67,6 +80,10 @@ namespace DiscordChatImporter
             }
         }
 
+        /// <summary>
+        /// Reads a file and splits it into messages.
+        /// This is to prevent Discord from rejecting messages that are too long.
+        /// </summary>
         private static List<string> ReadAndSplitFile(string filePath)
         {
             List<string> lines = new List<string>();
