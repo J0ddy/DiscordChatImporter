@@ -4,20 +4,42 @@ namespace DiscordChatImporter
 {
     internal class Program
     {
-        private static DiscordWebhook webhook;
-        private const string whurl = @"https://discord.com/api/webhooks/YOUR-WEBHOOK-HERE";
-        private static readonly string[] filter = { "**Embed:** null", "Embed: **null**" }; // Filter out certain messages
-
+        private static Settings settings;
         static void Main(string[] args)
         {
+            LoadSettings();
+            List<string> files = GetFiles();
+            List<string> messages = GetMessages(files);
+
+            Console.WriteLine("Sending messages...\n");
+            SendMessages(messages);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("\nDone!");
+            Console.ResetColor();
+            Console.WriteLine(" All Messages sent.");
+        }
+
+        private static void LoadSettings() {
+            Console.Write("Enter your Discord webhook URL: ");
+            string whurl = Console.ReadLine();
+            Console.Write("Enter any words you want to filter out (separated by a comma): ");
+            string[] filter = Console.ReadLine().Split(',');
+            settings = new Settings(whurl, filter);
+        }
+
+        private static List<string> GetFiles() {
             List<string> files = new List<string>();
             Console.WriteLine("Please enter the to the directory to import all files from: ");
             string dir = Console.ReadLine();
             if (!Directory.Exists(dir)) throw new DirectoryNotFoundException(nameof(dir));
             files.AddRange(Directory.GetFiles(dir, "*.txt"));
+            return files;
+        }
 
+
+        private static List<string> GetMessages(List<string> files)
+        {
             List<string> messages = new List<string>();
-
             foreach (string f in files)
             {
                 string name = Path.GetFileName(f);
@@ -27,19 +49,7 @@ namespace DiscordChatImporter
                 Console.WriteLine(" Loaded!");
                 Console.ResetColor();
             }
-
-            Console.Write("Initializing Discord webhook...");
-            webhook = new DiscordWebhook(whurl);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(" Done!");
-            Console.ResetColor();
-            Console.WriteLine("Sending messages...\n");
-            SendMessages(messages);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("\nDone!");
-            Console.ResetColor();
-            Console.WriteLine(" All Messages sent.");
-
+            return messages;
         }
 
         private static void SendMessages(List<string> messages)
@@ -49,8 +59,8 @@ namespace DiscordChatImporter
             {
                 Thread.Sleep(400);
                 Console.Write("Sending message " + ++counter + " of " + messages.Count + "...");
-                webhook.SendMessage(message);
-                webhook.Dispose();
+                settings.Webhook.SendMessage(message);
+                settings.Webhook.Dispose();
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(" Sent!");
                 Console.ResetColor();
@@ -65,7 +75,7 @@ namespace DiscordChatImporter
             while (!sr.EndOfStream)
             {
                 string line = sr.ReadLine();
-                if (filter.Any(line.Contains)) continue;
+                if (settings.Filter.Any(line.Contains)) continue;
                 if (sb.Length + line.Length <= 1998)
                 {
                     sb.Append(line+Environment.NewLine);
