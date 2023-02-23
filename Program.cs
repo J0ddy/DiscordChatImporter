@@ -23,6 +23,9 @@ namespace DiscordChatImporter
         /// Loads the settings from the console.
         /// </summary>
         private static void LoadSettings() {
+            /*
+                TODO: If the settings file exists, ask the user if they want to use the settings from the file.
+            */
             Console.Write("Enter your Discord webhook URL: ");
             string whurl = Console.ReadLine();
             Console.Write("Enter any words you want to filter out (separated by a comma): ");
@@ -110,6 +113,18 @@ namespace DiscordChatImporter
             }
 
             return lines;
+        }
+
+        private static void LoadSettingsFile() 
+        {
+            // TODO: Load settings from a file
+            throw new NotImplementedException();
+        }
+
+        private static void SaveSettingsFile() 
+        {
+            // TODO: Save settings to a file
+            throw new NotImplementedException();
         }
     }
 }
